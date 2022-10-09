@@ -20,6 +20,9 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (_unit.HP <=0)
+            return;
+
         if (_unit.CanAttackNow)
         {
             List<Vector3Int> tiles = _unit.GetAttackTiles();

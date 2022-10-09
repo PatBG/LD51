@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
     public Transform Model;
+    private Animator _animator;
 
     public bool IsEnemy;
 
@@ -67,6 +69,10 @@ public class Unit : MonoBehaviour
     {
         _initialY = Model.position.y;
         _list.Add(this);
+        if (Model != null)
+        {
+            _animator = Model.GetComponent<Animator>();
+        }
     }
 
     // Update is called once per frame
@@ -74,21 +80,8 @@ public class Unit : MonoBehaviour
     {
         if (!IsEnemy)
         {
-            AnimateCanNow();
+            SetAnimationBool("Ready", (CanMoveNow && GetMoveTiles().Count > 0) || (CanAttackNow && GetAttackTiles().Count > 0));
         }
-    }
-
-    private void AnimateCanNow()
-    {
-        Vector3 vec = Model.position;
-        vec.y = _initialY;
-        if ((CanMoveNow && GetMoveTiles().Count > 0) || (CanAttackNow && GetAttackTiles().Count > 0))
-        {
-            float coefHeight = 0.2f;
-            float coefTime = 4;
-            vec.y += Mathf.Abs(Mathf.Sin(Time.time * coefTime) * coefHeight);
-        }
-        Model.position = vec;
     }
 
     public List<Vector3Int> GetMoveTiles()
@@ -141,6 +134,8 @@ public class Unit : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(transform.position - previousPosition);    // Turn to the move direction
         TimeNextMove = Time.time + MapManager.TurnDuration;                                     // Time for next move
         Debug.Log(name + " move to: " + tile + "\r\n");
+
+        SetAnimationTrigger("Move");
     }
 
     public void AttackTo(Vector3Int tile)
@@ -157,6 +152,8 @@ public class Unit : MonoBehaviour
         defenderUnit.Damage(damage);
 
         TimeNextMove = TimeNextAttack = Time.time + MapManager.TurnDuration;                // Time for next move and attack
+
+        SetAnimationTrigger("Attack");
     }
 
     public string Description()
@@ -183,16 +180,42 @@ public class Unit : MonoBehaviour
     {
         Debug.Log(name + " with " + HP + " HP get " + damage + " damage(s).\r\n");
         HP = Mathf.Max(0, HP - damage);
-        if (HP == 0)
+        if (HP > 0)
+        {
+            SetAnimationTrigger("Hurt");
+        }
+        else
         {
             Die();
         }
     }
 
+    //private IEnumerator Die()
     private void Die()
     {
         Debug.Log(name + " is dead.\r\n");
         _list.Remove(this);
-        Destroy(gameObject);
+        SetAnimationTrigger("Die");
+        //Model.parent = null;                // Detach the model from its parents to let the corpse but destroy the unit
+        //yield return null;
+        //Destroy(gameObject);
     }
+
+    private void SetAnimationTrigger(string name)
+    {
+        if (_animator != null)
+        {
+            _animator.SetTrigger(name);
+        }
+    }
+
+    private void SetAnimationBool(string name, bool value)
+    {
+        if (_animator != null)
+        {
+            _animator.SetBool(name, value);
+        }
+    }
+
+
 }
