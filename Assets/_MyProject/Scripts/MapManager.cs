@@ -71,9 +71,15 @@ public class MapManager : MonoBehaviour
         new Vector3Int(-1, 0, 1),
     };
 
-    public static bool IsMoveAllowed(Vector3Int tile)
+    public static bool IsAllowed(Vector3Int tile)
     {
         bool isAllowed = (tile.x >= 0 && tile.x < SizeX && tile.z >= 0 && tile.z < SizeZ);
+        return isAllowed;
+    }
+
+    public static bool IsMoveAllowed(Vector3Int tile)
+    {
+        bool isAllowed = IsAllowed(tile);
         if (isAllowed)
         {
             Unit unit = Unit.GetUnit(tile);
@@ -84,7 +90,7 @@ public class MapManager : MonoBehaviour
 
     public static bool IsAttackAllowed(Vector3Int tile, bool isEnemy)
     {
-        bool isAllowed = (tile.x >= 0 && tile.x < SizeX && tile.z >= 0 && tile.z < SizeZ);
+        bool isAllowed = IsAllowed(tile);
         if (isAllowed)
         {
             Unit unit = Unit.GetUnit(tile);
