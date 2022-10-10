@@ -51,6 +51,6 @@ public class CameraManager : MonoBehaviour
     {
         _target = MapManager.GetPositionFromTile(tile);
         _hasTarget = true;
-        Debug.Log("Automatic camera go to tile: " + tile + "\r\n");
+        //Debug.Log("Automatic camera go to tile: " + tile + "\r\n");
     }
 }

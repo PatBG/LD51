@@ -92,7 +92,7 @@ public class PlayerManager : MonoBehaviour
 
     private void SelectTile(Vector3Int tile, bool isCameraFollow = true)
     {
-        Debug.Log("Select tile: " + tile + "\r\n");
+        //Debug.Log("Select tile: " + tile + "\r\n");
         if (isCameraFollow)
         {
             CameraManager.SetTileTarget(tile);

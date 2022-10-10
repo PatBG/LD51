@@ -64,15 +64,18 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Choose front tile or tile with the less rotation.
+    /// </summary>
     private Vector3Int ChooseFrontTile(Vector3 origin, Vector3 direction, List<Vector3Int> tiles)
     {
-        Debug.Log("ChooseFrontTile() direction = " + direction + "\r\n");
+        //Debug.Log("ChooseFrontTile() direction = " + direction + "\r\n");
         List<Tuple<float, Vector3Int>> tuples = new();
         foreach (Vector3Int tile in tiles)
         {
             float angle = Vector3.Angle(MapManager.GetPositionFromTile(tile) - origin, direction);
             tuples.Add(new(angle, tile));
-            Debug.Log("Add(" + tuples.Last().Item1 + ", " + tuples.Last().Item2 + ")\r\n");
+            //Debug.Log("Add(" + tuples.Last().Item1 + ", " + tuples.Last().Item2 + ")\r\n");
         }
         tuples.Sort((t1, t2) => t1.Item1.CompareTo(t2.Item1));
         Vector3Int v = tuples.First().Item2;
