@@ -1587,7 +1587,7 @@ GameObject:
   - component: {fileID: 136078110}
   - component: {fileID: 136078109}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1621,7 +1621,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -2974,7 +2974,7 @@ GameObject:
   - component: {fileID: 209131692}
   - component: {fileID: 209131691}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3008,7 +3008,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -4161,7 +4161,7 @@ GameObject:
   - component: {fileID: 308005560}
   - component: {fileID: 308005559}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4195,7 +4195,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -11701,9 +11701,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Model: {fileID: 1077242896}
   IsEnemy: 1
-  HP: 10
+  HP: 20
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -12651,7 +12651,7 @@ GameObject:
   - component: {fileID: 1126275375}
   - component: {fileID: 1126275374}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (11)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12685,7 +12685,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -14817,9 +14817,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Model: {fileID: 853863916}
   IsEnemy: 0
-  HP: 3
+  HP: 20
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -15181,7 +15181,7 @@ GameObject:
   - component: {fileID: 1294346926}
   - component: {fileID: 1294346925}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15215,7 +15215,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -15432,9 +15432,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Model: {fileID: 2027259994}
   IsEnemy: 0
-  HP: 10
+  HP: 20
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -15796,7 +15796,7 @@ GameObject:
   - component: {fileID: 1392607322}
   - component: {fileID: 1392607324}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15818,7 +15818,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -17452,9 +17452,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Model: {fileID: 114332799}
   IsEnemy: 0
-  HP: 10
+  HP: 20
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -18767,7 +18767,7 @@ GameObject:
   - component: {fileID: 1738304621}
   - component: {fileID: 1738304620}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18801,7 +18801,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -18957,7 +18957,7 @@ GameObject:
   - component: {fileID: 1763644807}
   - component: {fileID: 1763644806}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18991,7 +18991,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -19025,7 +19025,7 @@ GameObject:
   - component: {fileID: 1764607956}
   - component: {fileID: 1764607955}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19059,7 +19059,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -19749,7 +19749,7 @@ GameObject:
   - component: {fileID: 1802284614}
   - component: {fileID: 1802284613}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19783,7 +19783,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -20309,7 +20309,7 @@ GameObject:
   - component: {fileID: 1856859882}
   - component: {fileID: 1856859881}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20343,7 +20343,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -21307,9 +21307,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Model: {fileID: 559429220}
   IsEnemy: 0
-  HP: 10
+  HP: 20
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
@@ -23068,7 +23068,7 @@ GameObject:
   - component: {fileID: 2104813954}
   - component: {fileID: 2104813953}
   m_Layer: 0
-  m_Name: Foe
+  m_Name: Foe (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23102,7 +23102,7 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 6
+  Attack: 5
   Defense: 5
   CanMove: 1
   CanAttack: 1
