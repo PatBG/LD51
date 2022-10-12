@@ -10,6 +10,8 @@ using Random = UnityEngine.Random;
 public class EnemyAI : MonoBehaviour
 {
     private Unit _unit;
+    bool _previousIsReady = false;
+    float _timePseudoPause;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +25,19 @@ public class EnemyAI : MonoBehaviour
         if (_unit.HP <=0)
             return;
 
+        if (_previousIsReady != _unit.IsReady )
+        {
+            _previousIsReady = _unit.IsReady;
+            if (_previousIsReady)
+            {
+                // Simulate a random pause between each turn
+                _timePseudoPause = Time.time + Random.Range(Mathf.Min(1, MapManager.TurnDuration / 2), MapManager.TurnDuration / 2);
+            }
+        }
+        if (_previousIsReady && _timePseudoPause > Time.time)
+        {
+            return;
+        }
         if (_unit.CanAttackNow)
         {
             List<Vector3Int> tiles = _unit.GetAttackTiles();
