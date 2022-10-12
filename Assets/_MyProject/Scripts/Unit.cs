@@ -7,10 +7,6 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     // ------------------------------------------------------------------------
-    public const float BaseAttack = 0;
-    public const float BaseDefense = 10;
-    public const float BaseHP = 10;
-    public const float AttackCoef = 1;
     public const float AttackBonusBackstab = 2;
     public const float AttackBonusHalfBackstab = 1;
     public const float DefenseBonusFlanking = 1;
@@ -202,9 +198,6 @@ public class Unit : MonoBehaviour
         // Turn attacker to the defender
         transform.rotation = Quaternion.LookRotation(defenderUnit.transform.position - transform.position);
 
-        // Calculate base attack
-        float baseAttack = BaseAttack + Attack;
-        
         // Calculate backstab bonus
         float attackDirection = transform.rotation.eulerAngles.y;
         float defenderDirection = defenderUnit.transform.rotation.eulerAngles.y;
@@ -212,13 +205,13 @@ public class Unit : MonoBehaviour
         float backstabBonus = (deltaDirection <= 0) ? AttackBonusBackstab : (deltaDirection <= 60) ? AttackBonusHalfBackstab : 0;
 
         // Resulting attack
-        float attack = baseAttack + backstabBonus;
+        float attack = Attack + backstabBonus;
 
         // Turn defender to the attacker 
         defenderUnit.transform.rotation = Quaternion.LookRotation(transform.position - defenderUnit.transform.position);
 
         // Calculate base defense
-        float baseDefense = BaseDefense + defenderUnit.Defense;
+        float baseDefense = defenderUnit.Defense;
 
         // TODO: implement flanking bonus and recent hits malus
         float flankingBonus = 0;
@@ -236,13 +229,13 @@ public class Unit : MonoBehaviour
         float recentHitsMalus = defenderUnit.LastHitsCount * DefenseMalusLastHits;
 
         // Resulting defense
-        float defense = Mathf.Max(baseDefense + flankingBonus - recentHitsMalus, 1);
+        float defense = baseDefense + flankingBonus - recentHitsMalus;
 
         // Calculate resulting damage
-        int damage = Mathf.FloorToInt(BaseHP * AttackCoef * attack / defense);
+        int damage = Mathf.RoundToInt(attack - defense);
 
         Debug.Log(name + " attacks " + defenderUnit.name + " :" +
-            " attack=" + baseAttack + "+" + backstabBonus + 
+            " attack=" + Attack + "+" + backstabBonus + 
             " defense=" + baseDefense + "+" + flankingBonus + "-" + recentHitsMalus + " -> damage=" + damage + "\r\n");
         defenderUnit.Damage(damage);
 

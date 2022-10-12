@@ -1621,12 +1621,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &136078111
 Transform:
   m_ObjectHideFlags: 0
@@ -3008,12 +3006,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &209131693
 Transform:
   m_ObjectHideFlags: 0
@@ -4195,12 +4191,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &308005561
 Transform:
   m_ObjectHideFlags: 0
@@ -11701,14 +11695,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Model: {fileID: 1077242896}
   IsEnemy: 1
-  HP: 20
+  HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1008593343
 Transform:
   m_ObjectHideFlags: 0
@@ -12685,12 +12677,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1126275376
 Transform:
   m_ObjectHideFlags: 0
@@ -14818,13 +14808,11 @@ MonoBehaviour:
   Model: {fileID: 853863916}
   IsEnemy: 0
   HP: 20
-  MaxHP: 10
-  Attack: 5
-  Defense: 5
+  MaxHP: 20
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1274545998
 Transform:
   m_ObjectHideFlags: 0
@@ -15215,12 +15203,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1294346927
 Transform:
   m_ObjectHideFlags: 0
@@ -15433,13 +15419,11 @@ MonoBehaviour:
   Model: {fileID: 2027259994}
   IsEnemy: 0
   HP: 20
-  MaxHP: 10
-  Attack: 5
-  Defense: 5
+  MaxHP: 20
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1339293905
 Transform:
   m_ObjectHideFlags: 0
@@ -15818,12 +15802,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1392607323
 Transform:
   m_ObjectHideFlags: 0
@@ -17453,13 +17435,11 @@ MonoBehaviour:
   Model: {fileID: 114332799}
   IsEnemy: 0
   HP: 20
-  MaxHP: 10
-  Attack: 5
-  Defense: 5
+  MaxHP: 20
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1523726438
 Transform:
   m_ObjectHideFlags: 0
@@ -18801,12 +18781,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1738304622
 Transform:
   m_ObjectHideFlags: 0
@@ -18991,12 +18969,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1763644808
 Transform:
   m_ObjectHideFlags: 0
@@ -19059,12 +19035,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1764607957
 Transform:
   m_ObjectHideFlags: 0
@@ -19783,12 +19757,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1802284615
 Transform:
   m_ObjectHideFlags: 0
@@ -20343,12 +20315,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &1856859883
 Transform:
   m_ObjectHideFlags: 0
@@ -21308,13 +21278,11 @@ MonoBehaviour:
   Model: {fileID: 559429220}
   IsEnemy: 0
   HP: 20
-  MaxHP: 10
-  Attack: 5
-  Defense: 5
+  MaxHP: 20
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!43 &1940162200
 Mesh:
   m_ObjectHideFlags: 0
@@ -23102,12 +23070,10 @@ MonoBehaviour:
   IsEnemy: 1
   HP: 10
   MaxHP: 10
-  Attack: 5
-  Defense: 5
+  Attack: 4
+  Defense: 1
   CanMove: 1
   CanAttack: 1
-  TimeNextMove: 0
-  TimeNextAttack: 0
 --- !u!4 &2104813955
 Transform:
   m_ObjectHideFlags: 0
