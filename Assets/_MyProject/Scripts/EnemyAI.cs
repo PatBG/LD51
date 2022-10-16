@@ -43,7 +43,7 @@ public class EnemyAI : MonoBehaviour
             List<Vector3Int> tiles = _unit.GetAttackTiles();
             if (tiles.Count > 0)
             {
-                _unit.AttackTo(ChooseFrontTile(transform.position, transform.forward, tiles));        // Attack target in front or choose the one with less rotation
+                _unit.AttackTo(ChooseFrontTile(transform.position, _unit.Pivot.forward, tiles));        // Attack target in front or choose the one with less rotation
             }
         }
         if (_unit.CanMoveNow)
@@ -73,7 +73,7 @@ public class EnemyAI : MonoBehaviour
                     if (Random.Range(0, 100) < 40)
                         _unit.MoveTo(tiles[Random.Range(0, tiles.Count)]);                              // Move at random location
                     else
-                        _unit.MoveTo(ChooseFrontTile(transform.position, transform.forward, tiles));    // Move in front or with less rotation
+                        _unit.MoveTo(ChooseFrontTile(transform.position, _unit.Pivot.forward, tiles));    // Move in front or with less rotation
                 }
             }
         }

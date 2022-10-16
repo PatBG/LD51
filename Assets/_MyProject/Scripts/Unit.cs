@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor.Animations;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static Unit;
 
 public class Unit : MonoBehaviour
 {
@@ -13,6 +16,7 @@ public class Unit : MonoBehaviour
     public const float DefenseMalusLastHits = 1;
     // ------------------------------------------------------------------------
 
+    public Transform Pivot;
     public Transform Model;
     private Animator _animator;
 
@@ -20,6 +24,7 @@ public class Unit : MonoBehaviour
 
     public float HP;
     public float MaxHP;
+    public GameObject IconHeart;
 
     public float Attack;
     public float Defense;
@@ -183,61 +188,113 @@ public class Unit : MonoBehaviour
     {
         Vector3 previousPosition = transform.position;
         transform.position = MapManager.GetPositionFromTile(tile);                              // Move to tile
-        transform.rotation = Quaternion.LookRotation(transform.position - previousPosition);    // Turn to the move direction
+        Pivot.transform.rotation = Quaternion.LookRotation(transform.position - previousPosition);    // Turn to the move direction
         _timeNextMove = Time.time + MapManager.TurnDuration;                                     // Time for next move
         //Debug.Log(name + " move to: " + tile + "\r\n");
 
         SetAnimationTrigger("Move");
     }
 
-    public void AttackTo(Vector3Int tile)
+    public struct AttackData
     {
-        Unit defenderUnit = Unit.GetUnit(tile);
-        Debug.Assert(defenderUnit != null, "Attack empty tile: " + tile);
-        
+        public Unit attacker;
+        public Unit defender;
+        public float backstabAttackBonus;
+        public float attack;
+        public float flankingDefenseBonus;
+        public float recentHitsDefenseMalus;
+        public float defense;
+        public int damage;
+    }
+    public static string AttackDataToString(AttackData attackData)
+    {
+        string txt = "\r\n";
+        if (attackData.attacker == null)
+        {
+            txt += "no attacker\r\n";
+        }
+        else
+        {
+            txt += "attacker:" + attackData.attacker.name + "\r\n";
+            txt += "baseAttack:" + attackData.attacker.Attack + "\r\n";
+            txt += "backstabAttackBonus:" + attackData.backstabAttackBonus + "\r\n";
+            txt += "attack:" + attackData.attack + "\r\n";
+        }
+        if (attackData.defender == null)
+        {
+            txt += "no defender\r\n";
+        }
+        else
+        {
+            txt += "defender:" + attackData.defender.name + "\r\n";
+            txt += "baseDefense:" + attackData.defender.Defense + "\r\n";
+            txt += "flankingDefenseBonus:" + attackData.flankingDefenseBonus + "\r\n";
+            txt += "recentHitsDefenseMalus:" + attackData.recentHitsDefenseMalus + "\r\n";
+            txt += "defense:" + attackData.defense + "\r\n";
+            txt += "damage:" + attackData.damage + "\r\n";
+        }
+        return txt;
+    }
+
+    public AttackData CalculateAttack(Vector3Int tile)
+    {
+        AttackData data = new();
+
+        data.attacker = this;
+        data.defender = Unit.GetUnit(tile);
+        Debug.Assert(data.defender != null, "Attack empty tile: " + tile);
+
         // Turn attacker to the defender
-        transform.rotation = Quaternion.LookRotation(defenderUnit.transform.position - transform.position);
+        Quaternion attackerRotation = Quaternion.LookRotation(data.defender.transform.position - transform.position);
 
         // Calculate backstab bonus
-        float attackDirection = transform.rotation.eulerAngles.y;
-        float defenderDirection = defenderUnit.transform.rotation.eulerAngles.y;
+        float attackDirection = attackerRotation.eulerAngles.y;
+        float defenderDirection = data.defender.Pivot.transform.rotation.eulerAngles.y;
         float deltaDirection = MathF.Abs(Mathf.DeltaAngle(attackDirection, defenderDirection));
-        float backstabBonus = (deltaDirection <= 0) ? AttackBonusBackstab : (deltaDirection <= 60) ? AttackBonusHalfBackstab : 0;
+        // Backstab is 0° and half backstab is 60° (possible direction are 0, 60, 120, 180)
+        data.backstabAttackBonus = (deltaDirection < 30) ? AttackBonusBackstab : (deltaDirection < 90) ? AttackBonusHalfBackstab : 0;
 
         // Resulting attack
-        float attack = Attack + backstabBonus;
+        data.attack = Attack + data.backstabAttackBonus;
 
-        // Turn defender to the attacker 
-        defenderUnit.transform.rotation = Quaternion.LookRotation(transform.position - defenderUnit.transform.position);
-
-        // Calculate base defense
-        float baseDefense = defenderUnit.Defense;
-
-        // TODO: implement flanking bonus and recent hits malus
-        float flankingBonus = 0;
-        List<Vector3Int> flankTiles = GetFlankTiles(defenderUnit.Tile);
-        foreach(Vector3Int flankTile in flankTiles)
+        // Calculate flanking bonus
+        data.flankingDefenseBonus = 0;
+        List<Vector3Int> flankTiles = GetFlankTiles(data.defender.Tile);
+        foreach (Vector3Int flankTile in flankTiles)
         {
             Unit flankUnit = GetUnit(flankTile);
-            if (flankUnit != null && flankUnit.IsEnemy == defenderUnit.IsEnemy)
+            if (flankUnit != null && flankUnit.IsEnemy == data.defender.IsEnemy)
             {
-                flankingBonus += DefenseBonusFlanking;
+                data.flankingDefenseBonus += DefenseBonusFlanking;
             }
         }
 
         // Calculate the defense malus based on hit during the last turn
-        float recentHitsMalus = defenderUnit.LastHitsCount * DefenseMalusLastHits;
+        data.recentHitsDefenseMalus = data.defender.LastHitsCount * DefenseMalusLastHits;
 
         // Resulting defense
-        float defense = baseDefense + flankingBonus - recentHitsMalus;
+        data.defense = data.defender.Defense + data.flankingDefenseBonus - data.recentHitsDefenseMalus;
 
         // Calculate resulting damage
-        int damage = Mathf.RoundToInt(attack - defense);
+        data.damage = Mathf.RoundToInt(data.attack - data.defense);
 
-        Debug.Log(name + " attacks " + defenderUnit.name + " :" +
-            " attack=" + Attack + "+" + backstabBonus + 
-            " defense=" + baseDefense + "+" + flankingBonus + "-" + recentHitsMalus + " -> damage=" + damage + "\r\n");
-        defenderUnit.Damage(damage);
+        return data;
+    }
+
+    public void AttackTo(Vector3Int tile)
+    {
+        AttackData attackData = CalculateAttack(tile);
+
+        // Turn attacker to the defender
+        Pivot.transform.rotation = Quaternion.LookRotation(attackData.defender.transform.position - transform.position);
+
+        // Turn defender to the attacker 
+        attackData.defender.Pivot.transform.rotation = Quaternion.LookRotation(transform.position - attackData.defender.transform.position);
+
+        Debug.Log(name + " attacks " + attackData.defender.name + " :" +
+            " attack=" + Attack + "+" + attackData.backstabAttackBonus + 
+            " defense=" + attackData.defender.Defense + "+" + attackData.flankingDefenseBonus + "-" + attackData.recentHitsDefenseMalus + " -> damage=" + attackData.damage + "\r\n");
+        attackData.defender.Damage(attackData);
 
         _timeNextAttack = Time.time + MapManager.TurnDuration;              // Time for next attack
         _timeNextMove = _timeNextAttack;                                    // Time for next move is also affected because attack ends the turn
@@ -269,10 +326,11 @@ public class Unit : MonoBehaviour
         return text;
     }
 
-    private void Damage(int damage)
+    private void Damage(AttackData attackData)
     {
         _lastHits.Add(Time.time);
-        HP = Mathf.Max(0, HP - damage);
+        StartDamagePopup(attackData);
+        HP = Mathf.Max(0, HP - attackData.damage);
         if (HP > 0)
         {
             SetAnimationTrigger("Hurt");
@@ -281,6 +339,22 @@ public class Unit : MonoBehaviour
         {
             Die();
         }
+    }
+
+    private void StartDamagePopup(AttackData attackData)
+    {
+        GameObject damagePopup = new("DamagePopup", typeof(DamagePopup));
+        damagePopup.transform.parent = transform;
+
+        int index = Mathf.RoundToInt(attackData.defense * AttackUI.CoefIconPosition);
+        for (int i = 0; i < attackData.damage; i++)
+        {
+            Instantiate(IconHeart, new Vector3(((float)index++) * AttackUI.CoefIconPosition, 0, 0), Quaternion.identity, damagePopup.transform);
+        }
+
+        damagePopup.transform.localPosition = Vector3.up;
+        damagePopup.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
+        damagePopup.transform.localScale = AttackUI.ScaleFactor;
     }
 
     //private IEnumerator Die()

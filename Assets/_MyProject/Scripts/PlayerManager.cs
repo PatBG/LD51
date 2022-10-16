@@ -2,8 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.UI.CanvasScaler;
+
+[RequireComponent(typeof(AttackUI))]
 
 public class PlayerManager : MonoBehaviour
 {
@@ -14,20 +18,37 @@ public class PlayerManager : MonoBehaviour
 
     private readonly List<GameObject> _highlights = new();
 
-    public enum SelectionType { None, Ally, Enemy }
+    public enum SelectionType { None, Ally }
 
     private SelectionType _selection;
     private Unit _selectionUnit;
 
-    public GameObject PanelDescription;
-    public TextMeshProUGUI TextDescription;
-
     public GameObject PanelEndGame;
     public TextMeshProUGUI TextEndGame;
+
+    private AttackUI _attackUI;
 
     // Start is called before the first frame update
     void Start()
     {
+        _attackUI = GetComponent<AttackUI>();
+        Debug.Assert(_attackUI != null);
+    }
+
+    private bool TileFromMousePosition(out Vector3Int tile)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        int layermask = 1 << LayerMask.NameToLayer("Tiles");
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask))
+        {
+            tile = MapManager.GetTileFromPosition(raycastHit.transform.position);
+            return true;
+        }
+        else
+        {
+            tile = new Vector3Int(-1, -1, -1);
+            return false;
+        }
     }
 
     // Update is called once per frame
@@ -35,35 +56,77 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            int layermask = 1 << LayerMask.NameToLayer("Tiles");
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask))
+            if (TileFromMousePosition(out Vector3Int selectedTile))
             {
-                SelectTile(MapManager.GetTileFromPosition(raycastHit.transform.position));
+                SelectTile(selectedTile);
             }
             else
             {
                 ClearSelection();
             }
         }
-        else if (_selection == SelectionType.Ally || _selection == SelectionType.Enemy)
+        else if (_selection == SelectionType.Ally)
         {
             // Refresh Selected unit (reselect it)
             Vector3Int tile = _selectionUnit.Tile;
             ClearSelection();
             SelectTile(tile, false);
+
+            // If he can attack now, check if we hover an enemy
+            if (_selectionUnit.CanAttackNow)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                int layermask = 1 << LayerMask.NameToLayer("Tiles");
+                if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask))
+                {
+                    Vector3Int hoveredTile = MapManager.GetTileFromPosition(raycastHit.transform.position);
+                    bool isEnemy = false;
+                    foreach (GameObject go in _highlights)
+                    {
+                        if (MapManager.GetTileFromPosition(go.transform.position) == hoveredTile)
+                        {
+                            if (go.name.StartsWith(HighlightAttack.name))
+                            {
+                                isEnemy = true;
+                                break;
+                            }
+                        }
+                    }
+                    // An attackable enemy is hovered, update the attack HUD
+                    _attackUI.DefenderTile = isEnemy ? hoveredTile : new Vector3Int(-1, -1, -1);
+                }
+            }
+        }
+        else
+        {
+            Unit unit = null;
+            if (TileFromMousePosition(out Vector3Int hoveredTile))
+            {
+                unit = Unit.GetUnit(hoveredTile);
+                if (unit != null)
+                {
+                    // Display the HUD for the hovered unit
+                    _attackUI.AttackerTile = hoveredTile;
+                    _attackUI.DefenderTile = new Vector3Int(-1, -1, -1);
+                }
+            }
+            _attackUI.IsRefreshed = (unit != null);
         }
 
-        // Check endgame
+        CheckEndGame();
+    }
+
+    private void CheckEndGame()
+    {
         if (!PanelEndGame.activeInHierarchy)
-        { 
+        {
             if (Unit.CountUnits(true) == 0)
             {
                 // Victory
                 int nb = Unit.CountUnits(false);
                 TextEndGame.text =
                     "You win!!!\r\n" +
-                    "with " + nb + " guard" + (nb > 0 ? "s" : "")+ " left.";
+                    "with " + nb + " guard" + (nb > 0 ? "s" : "") + " left.";
                 PanelEndGame.SetActive(true);
             }
             else if (Unit.CountUnits(false) == 0)
@@ -72,7 +135,7 @@ public class PlayerManager : MonoBehaviour
                 int nb = Unit.CountUnits(true);
                 TextEndGame.text =
                     "You loose!!!\r\n" +
-                    "with " + nb + " foe" + (nb > 0 ? "s" : "")+ " left.";
+                    "with " + nb + " foe" + (nb > 0 ? "s" : "") + " left.";
                 PanelEndGame.SetActive(true);
             }
         }
@@ -87,7 +150,7 @@ public class PlayerManager : MonoBehaviour
             Destroy(go);
         }
         _highlights.Clear();
-        PanelDescription.SetActive(false);
+        _attackUI.IsRefreshed = false;
     }
 
     private void SelectTile(Vector3Int tile, bool isCameraFollow = true)
@@ -95,39 +158,42 @@ public class PlayerManager : MonoBehaviour
         //Debug.Log("Select tile: " + tile + "\r\n");
         if (isCameraFollow)
         {
-            CameraManager.SetTileTarget(tile);
+            Vector3 tilePosition = MapManager.GetPositionFromTile(tile);
+            Vector3 screenPoint = Camera.main.WorldToScreenPoint(tilePosition);
+            float minX = Camera.main.pixelWidth * 0.3f;
+            float maxX = Camera.main.pixelWidth * 0.7f;
+            float minY = Camera.main.pixelHeight * 0.3f;
+            float maxY = Camera.main.pixelHeight * 0.7f;
+            // Camera follow is applied only on the screen border
+            if (screenPoint.x <= minX || screenPoint.x >= maxX || screenPoint.y <= minY || screenPoint.y >= maxY)
+            {
+                CameraManager.SetTileTarget(tile);
+            }
         }
         if (_selection == SelectionType.None)
         {
             Unit unit = Unit.GetUnit(tile);
-            if (unit != null)
+            if (unit != null && unit.IsEnemy == false)
             {
                 _selectionUnit = unit;
-                // Show unit description
-                PanelDescription.SetActive(true);
-                TextDescription.text = unit.Description();
-                if (unit.IsEnemy)
-                {
-                    _selection = SelectionType.Enemy;
-                    // Highlight the unit
-                    _highlights.Add(Instantiate(HighlightEnemy, MapManager.GetPositionFromTile(tile), Quaternion.identity, unit.transform));
-                }
-                else
-                {
-                    _selection = SelectionType.Ally;
+                _selection = SelectionType.Ally;
 
-                    // Highlight the unit
-                    _highlights.Add(Instantiate(HighlightAlly, MapManager.GetPositionFromTile(tile), Quaternion.identity, unit.transform));
-                    // Highlight the movements
-                    foreach (Vector3Int moveTile in unit.GetMoveTiles())
-                    {
-                        _highlights.Add(Instantiate(HighlightMove, MapManager.GetPositionFromTile(moveTile), Quaternion.identity, unit.transform));
-                    }
-                    // Highlight the attacks
-                    foreach (Vector3Int attackTile in unit.GetAttackTiles())
-                    {
-                        _highlights.Add(Instantiate(HighlightAttack, MapManager.GetPositionFromTile(attackTile), Quaternion.identity, unit.transform));
-                    }
+                // Activate the attackHUD
+                _attackUI.AttackerTile = tile;
+                _attackUI.DefenderTile = new Vector3Int(-1, -1, -1);
+                _attackUI.IsRefreshed = true;
+
+                // Highlight the unit
+                _highlights.Add(Instantiate(HighlightAlly, MapManager.GetPositionFromTile(tile), Quaternion.identity, unit.transform));
+                // Highlight the movements
+                foreach (Vector3Int moveTile in unit.GetMoveTiles())
+                {
+                    _highlights.Add(Instantiate(HighlightMove, MapManager.GetPositionFromTile(moveTile), Quaternion.identity, unit.transform));
+                }
+                // Highlight the attacks
+                foreach (Vector3Int attackTile in unit.GetAttackTiles())
+                {
+                    _highlights.Add(Instantiate(HighlightAttack, MapManager.GetPositionFromTile(attackTile), Quaternion.identity, unit.transform));
                 }
                 return;
             }
@@ -154,12 +220,6 @@ public class PlayerManager : MonoBehaviour
                     }
                 }
             }
-            ClearSelection();
-            SelectTile(tile);                // Clear the previous selection and select the new tile
-            return;
-        }
-        else if (_selection == SelectionType.Enemy)
-        {
             ClearSelection();
             SelectTile(tile);                // Clear the previous selection and select the new tile
             return;
