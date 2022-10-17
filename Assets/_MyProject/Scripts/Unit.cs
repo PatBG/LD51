@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor.Animations;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static Unit;
+
+[RequireComponent(typeof(AudioSource))]
 
 public class Unit : MonoBehaviour
 {
@@ -19,6 +17,10 @@ public class Unit : MonoBehaviour
     public Transform Pivot;
     public Transform Model;
     private Animator _animator;
+
+    public AudioClip SoundMove;
+    public AudioClip SoundHitShield;
+    public AudioClip SoundHit;
 
     public bool IsEnemy;
 
@@ -193,6 +195,7 @@ public class Unit : MonoBehaviour
         //Debug.Log(name + " move to: " + tile + "\r\n");
 
         SetAnimationTrigger("Move");
+        GetComponent<AudioSource>().PlayOneShot(SoundMove);
     }
 
     public struct AttackData
@@ -275,8 +278,8 @@ public class Unit : MonoBehaviour
         // Resulting defense
         data.defense = data.defender.Defense + data.flankingDefenseBonus - data.recentHitsDefenseMalus;
 
-        // Calculate resulting damage
-        data.damage = Mathf.RoundToInt(data.attack - data.defense);
+        // Calculate resulting damage (cannot be less than zero)
+        data.damage = Mathf.Max(0, Mathf.RoundToInt(data.attack - data.defense));
 
         return data;
     }
@@ -300,7 +303,27 @@ public class Unit : MonoBehaviour
         _timeNextMove = _timeNextAttack;                                    // Time for next move is also affected because attack ends the turn
 
         SetAnimationTrigger("Attack");
+        List<AudioClip> audioList = new();
+        for (int i = 0; i < attackData.attack - attackData.damage; i++)
+        {
+            audioList.Add(SoundHitShield);
+        }
+        for (int i = 0; i < attackData.damage; i++)
+        {
+            audioList.Add(SoundHit);
+        }
+        StartCoroutine(playEngineSound(audioList));
     }
+
+    IEnumerator playEngineSound(List<AudioClip> audioList)
+    {
+        foreach(AudioClip audioClip in audioList)
+        {
+            GetComponent<AudioSource>().PlayOneShot(audioClip);
+            yield return new WaitForSeconds(audioClip.length + 0.1f);
+        }
+    }
+
 
     public string Description()
     {
