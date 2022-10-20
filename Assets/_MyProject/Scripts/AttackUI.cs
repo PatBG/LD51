@@ -61,8 +61,8 @@ public class AttackUI : MonoBehaviour
             {
                 AttackData attackData = new()
                 {
-                    attacker = attacker,
-                    backstabAttackBonus = 0
+                    Attacker = attacker,
+                    BackstabAttackBonus = 0
                 };
                 InitAttacker(attackData, _attackerHUD.transform);
             }
@@ -71,7 +71,8 @@ public class AttackUI : MonoBehaviour
                 _defenderHUD = new GameObject("DefenderHUD");
                 _defenderHUD.transform.parent = defender.transform;
 
-                AttackData attackData = attacker.CalculateAttack(defender.Tile);
+                AttackData attackData = new();
+                attackData.CalculateAttack(attacker, defender);
                 InitAttacker(attackData, _attackerHUD.transform);
                 InitDefender(attackData, _defenderHUD.transform);
 
@@ -85,61 +86,61 @@ public class AttackUI : MonoBehaviour
         }
     }
 
-    private void InitAttacker(Unit.AttackData attackData, Transform hud)
+    private void InitAttacker(AttackData attackData, Transform hud)
     {
         int index = 0;
         // Attack data
-        for (int i = 0; i < attackData.attacker.Attack; i++)
+        for (int i = 0; i < attackData.Attacker.Attack; i++)
         {
             Instantiate(IconSword, new Vector3(((float)index++) * CoefIconPosition, 1 * CoefIconPosition, 0), Quaternion.identity, hud);
         }
-        for (int i = 0; i < attackData.backstabAttackBonus; i++)
+        for (int i = 0; i < attackData.BackstabAttackBonus; i++)
         {
             Instantiate(IconBackstab, new Vector3(((float)index++) * CoefIconPosition, 1 * CoefIconPosition, 0), Quaternion.identity, hud);
         }
         // Defense data
         index = 0;
-        if (attackData.attacker.Defense > 0)
+        if (attackData.Attacker.Defense > 0)
         {
             Instantiate(IconArmor, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
-        if (attackData.attacker.Defense > 1)
+        if (attackData.Attacker.Defense > 1)
         {
             Instantiate(IconShield, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
-        for (int i = 0; i < attackData.attacker.HP; i++)
+        for (int i = 0; i < attackData.Attacker.HP; i++)
         {
             Instantiate(IconHeart, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
         index = 0;
-        float recentHitsDefenseMalus = attackData.attacker.LastHitsCount * DefenseMalusLastHits;
+        float recentHitsDefenseMalus = attackData.Attacker.LastHitsCount;
         for (int i = 0; i < recentHitsDefenseMalus; i++)
         {
             Instantiate(IconHit, new Vector3(((float)index++) * CoefIconPosition, 0, -0.1f), Quaternion.identity, hud);
         }
     }
 
-    private void InitDefender(Unit.AttackData attackData, Transform hud)
+    private void InitDefender(AttackData attackData, Transform hud)
     {
         int index = 0;
-        for (int i = 0; i < attackData.flankingDefenseBonus; i++)
+        for (int i = 0; i < attackData.FlankingDefenseBonus; i++)
         {
             Instantiate(IconFlanked, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
-        if (attackData.defender.Defense > 0)
+        if (attackData.Defender.Defense > 0)
         {
             Instantiate(IconArmor, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
-        if (attackData.defender.Defense > 1)
+        if (attackData.Defender.Defense > 1)
         {
             Instantiate(IconShield, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
-        for (int i = 0; i < attackData.defender.HP; i++)
+        for (int i = 0; i < attackData.Defender.HP; i++)
         {
             Instantiate(IconHeart, new Vector3(((float)index++) * CoefIconPosition, 0, 0), Quaternion.identity, hud);
         }
         index = 0;
-        for (int i = 0; i < attackData.recentHitsDefenseMalus; i++)
+        for (int i = 0; i < attackData.RecentHitsDefenseMalus; i++)
         {
             Instantiate(IconHit, new Vector3(((float)index++) * CoefIconPosition, 0, -0.1f), Quaternion.identity, hud);
         }
