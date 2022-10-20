@@ -85,23 +85,6 @@ public class AttackUI : MonoBehaviour
         }
     }
 
-    //public void RefreshRotation()
-    //{
-    //    if (_attackerHUD != null)
-    //    {
-    //        _attackerHUD.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
-    //    }
-    //    if (_defenderHUD != null)
-    //    {
-    //        _defenderHUD.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
-    //    }
-    //}
-
-    //private void LateUpdate()
-    //{
-    //    RefreshRotation();
-    //}
-
     private void InitAttacker(Unit.AttackData attackData, Transform hud)
     {
         int index = 0;
