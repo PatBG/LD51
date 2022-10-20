@@ -26,6 +26,8 @@ public class PlayerManager : MonoBehaviour
     public GameObject PanelEndGame;
     public TextMeshProUGUI TextEndGame;
 
+    public GameObject PanelHelp;
+
     private AttackUI _attackUI;
 
     // Start is called before the first frame update
@@ -33,6 +35,8 @@ public class PlayerManager : MonoBehaviour
     {
         _attackUI = GetComponent<AttackUI>();
         Debug.Assert(_attackUI != null);
+
+        EnterPanelHelp();
     }
 
     private bool TileFromMousePosition(out Vector3Int tile)
@@ -54,11 +58,22 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (PanelHelp.activeInHierarchy)
+        {
+            return;
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EnterPanelHelp();
+            return;
+        }
+
+        bool isHoveredTile = TileFromMousePosition(out Vector3Int hoveredTile);
         if (Input.GetButtonDown("Fire1"))
         {
-            if (TileFromMousePosition(out Vector3Int selectedTile))
+            if (isHoveredTile)
             {
-                SelectTile(selectedTile);
+                SelectTile(hoveredTile);
             }
             else
             {
@@ -75,11 +90,8 @@ public class PlayerManager : MonoBehaviour
             // If he can attack now, check if we hover an enemy
             if (_selectionUnit.CanAttackNow)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                int layermask = 1 << LayerMask.NameToLayer("Tiles");
-                if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask))
+                if (isHoveredTile)
                 {
-                    Vector3Int hoveredTile = MapManager.GetTileFromPosition(raycastHit.transform.position);
                     bool isEnemy = false;
                     foreach (GameObject go in _highlights)
                     {
@@ -100,7 +112,7 @@ public class PlayerManager : MonoBehaviour
         else
         {
             Unit unit = null;
-            if (TileFromMousePosition(out Vector3Int hoveredTile))
+            if (isHoveredTile)
             {
                 unit = Unit.GetUnit(hoveredTile);
                 if (unit != null)
@@ -231,5 +243,17 @@ public class PlayerManager : MonoBehaviour
     {
         Unit.HackClearList();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+    }
+
+    public void EnterPanelHelp()
+    {
+        Time.timeScale = 0;
+        PanelHelp.SetActive(true);
+    }
+
+    public void QuitPanelHelp()
+    {
+        PanelHelp.SetActive(false);
+        Time.timeScale = 1;
     }
 }
