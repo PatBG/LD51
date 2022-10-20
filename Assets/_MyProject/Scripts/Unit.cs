@@ -25,7 +25,6 @@ public class Unit : MonoBehaviour
     public bool IsEnemy;
 
     public float HP;
-    public float MaxHP;
     public GameObject IconHeart;
 
     public float Attack;
@@ -303,15 +302,10 @@ public class Unit : MonoBehaviour
         _timeNextMove = _timeNextAttack;                                    // Time for next move is also affected because attack ends the turn
 
         SetAnimationTrigger("Attack");
+
         List<AudioClip> audioList = new();
-        for (int i = 0; i < attackData.attack - attackData.damage; i++)
-        {
-            audioList.Add(SoundHitShield);
-        }
-        for (int i = 0; i < attackData.damage; i++)
-        {
-            audioList.Add(SoundHit);
-        }
+        audioList.Add((attackData.attack > attackData.damage) ? SoundHitShield : SoundHit);
+        audioList.Add((attackData.damage <= 0) ? SoundHitShield : SoundHit);
         StartCoroutine(playEngineSound(audioList));
     }
 
@@ -322,31 +316,6 @@ public class Unit : MonoBehaviour
             GetComponent<AudioSource>().PlayOneShot(audioClip);
             yield return new WaitForSeconds(audioClip.length + 0.1f);
         }
-    }
-
-
-    public string Description()
-    {
-        string text = name + "  ";
-        if (CanAttack)
-        {
-            text += "  Attack " + Attack;
-        }        
-        text += "  Defense " + Defense;
-        if (LastHitsCount > 0)
-        {
-            text += "(-" + LastHitsCount + ")";
-        }
-        text += "  HP " + HP + "/" + MaxHP;
-        if (CanMove && !CanMoveNow)
-        {
-            int sec = Mathf.RoundToInt(_timeNextMove - Time.time);
-            if (sec > 0)
-            {
-                text += "  " + new String('⌂', Mathf.FloorToInt(sec));
-            }
-        }
-        return text;
     }
 
     private void Damage(AttackData attackData)
@@ -406,6 +375,4 @@ public class Unit : MonoBehaviour
             _animator.SetBool(name, value);
         }
     }
-
-
 }
