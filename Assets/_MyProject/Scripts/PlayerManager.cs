@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using static UnityEngine.UI.CanvasScaler;
 
@@ -43,7 +44,7 @@ public class PlayerManager : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         int layermask = 1 << LayerMask.NameToLayer("Tiles");
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask))
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask) && !EventSystem.current.IsPointerOverGameObject())
         {
             tile = MapManager.GetTileFromPosition(raycastHit.transform.position);
             return true;
