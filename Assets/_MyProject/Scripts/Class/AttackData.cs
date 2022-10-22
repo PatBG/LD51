@@ -63,33 +63,26 @@ public class AttackData
     {
         List<Tile> flankTiles = new();
 
-        Tile[] adjacent = (attackerTile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-        List<Tile> tiles = new();
-        int index = -1;
-        foreach (Tile delta in adjacent)
+        List<Tile> tiles = defenderTile.GetAdjacentTiles();
+        int index = tiles.FindIndex(a => a == attackerTile);        // Index of the tile of the defender
+
+        if (index >= 0)
         {
-            Tile tile = attackerTile + delta;
-            tiles.Add(tile);
-            if (tile == defenderTile)
+            // Flank left
+            int indexFlankedTile = (index + 5) % 6;
+            Tile flankedTile = tiles[indexFlankedTile];
+            if (MapManager.IsAllowed(flankedTile))
             {
-                index = tiles.Count - 1;            // Index if the current unit
+                flankTiles.Add(flankedTile);
             }
-        }
 
-        // Flank left
-        int indexFlankedTile = (index + 5) % 6;
-        Tile flankedTile = tiles[indexFlankedTile];
-        if (MapManager.IsAllowed(flankedTile))
-        {
-            flankTiles.Add(flankedTile);
-        }
-
-        // Flank right
-        indexFlankedTile = (index + 1) % 6;
-        flankedTile = tiles[indexFlankedTile];
-        if (MapManager.IsAllowed(flankedTile))
-        {
-            flankTiles.Add(flankedTile);
+            // Flank right
+            indexFlankedTile = (index + 1) % 6;
+            flankedTile = tiles[indexFlankedTile];
+            if (MapManager.IsAllowed(flankedTile))
+            {
+                flankTiles.Add(flankedTile);
+            }
         }
 
         return flankTiles;

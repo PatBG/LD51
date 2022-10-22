@@ -88,7 +88,7 @@ public class EnemyAI : MonoBehaviour
         List<Tuple<float, Tile>> tuples = new();
         foreach (Tile tile in tiles)
         {
-            float angle = Vector3.Angle(MapManager.GetPositionFromTile(tile) - origin, direction);
+            float angle = Vector3.Angle(tile.GetPosition() - origin, direction);
             tuples.Add(new(angle, tile));
             //Debug.Log("Add(" + tuples.Last().Item1 + ", " + tuples.Last().Item2 + ")\r\n");
         }

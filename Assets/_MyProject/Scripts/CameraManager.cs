@@ -49,7 +49,7 @@ public class CameraManager : MonoBehaviour
 
     public static void SetTileTarget(Tile tile)
     {
-        _target = MapManager.GetPositionFromTile(tile);
+        _target = tile.GetPosition();
         _hasTarget = true;
         //Debug.Log("Automatic camera go to tile: " + tile + "\r\n");
     }

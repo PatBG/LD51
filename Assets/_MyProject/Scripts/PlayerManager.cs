@@ -46,7 +46,7 @@ public class PlayerManager : MonoBehaviour
         int layermask = 1 << LayerMask.NameToLayer("Tiles");
         if (Physics.Raycast(ray, out RaycastHit raycastHit, 100f, layermask) && !EventSystem.current.IsPointerOverGameObject())
         {
-            tile = MapManager.GetTileFromPosition(raycastHit.transform.position);
+            tile = Tile.GetTile(raycastHit.transform.position);
             return true;
         }
         else
@@ -97,7 +97,7 @@ public class PlayerManager : MonoBehaviour
                         bool isEnemy = false;
                         foreach (GameObject go in _highlights)
                         {
-                            if (MapManager.GetTileFromPosition(go.transform.position) == hoveredTile)
+                            if (Tile.GetTile(go.transform.position) == hoveredTile)
                             {
                                 if (go.name.StartsWith(HighlightAttack.name))
                                 {
@@ -173,8 +173,7 @@ public class PlayerManager : MonoBehaviour
         //Debug.Log("Select tile: " + tile + "\r\n");
         if (isCameraFollow)
         {
-            Vector3 tilePosition = MapManager.GetPositionFromTile(tile);
-            Vector3 screenPoint = Camera.main.WorldToScreenPoint(tilePosition);
+            Vector3 screenPoint = Camera.main.WorldToScreenPoint(tile.GetPosition());
             float minX = Camera.main.pixelWidth * 0.3f;
             float maxX = Camera.main.pixelWidth * 0.7f;
             float minY = Camera.main.pixelHeight * 0.3f;
@@ -199,16 +198,16 @@ public class PlayerManager : MonoBehaviour
                 _attackUI.IsRefreshed = true;
 
                 // Highlight the unit
-                _highlights.Add(Instantiate(HighlightAlly, MapManager.GetPositionFromTile(tile), Quaternion.identity, unit.transform));
+                _highlights.Add(Instantiate(HighlightAlly, tile.GetPosition(), Quaternion.identity, unit.transform));
                 // Highlight the movements
                 foreach (Tile moveTile in unit.GetMoveTiles())
                 {
-                    _highlights.Add(Instantiate(HighlightMove, MapManager.GetPositionFromTile(moveTile), Quaternion.identity, unit.transform));
+                    _highlights.Add(Instantiate(HighlightMove, moveTile.GetPosition(), Quaternion.identity, unit.transform));
                 }
                 // Highlight the attacks
                 foreach (Tile attackTile in unit.GetAttackTiles())
                 {
-                    _highlights.Add(Instantiate(HighlightAttack, MapManager.GetPositionFromTile(attackTile), Quaternion.identity, unit.transform));
+                    _highlights.Add(Instantiate(HighlightAttack, attackTile.GetPosition(), Quaternion.identity, unit.transform));
                 }
                 return;
             }
@@ -217,7 +216,7 @@ public class PlayerManager : MonoBehaviour
         {
             foreach (GameObject go in _highlights)
             {
-                if (MapManager.GetTileFromPosition(go.transform.position) == tile)
+                if (Tile.GetTile(go.transform.position) == tile)
                 {
                     if (go.name.StartsWith(HighlightMove.name))
                     {

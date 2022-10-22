@@ -34,7 +34,7 @@ public class Unit : MonoBehaviour
     private readonly List<float> _lastHits = new();
     public int LastHitsCount => _lastHits.Count;
 
-    public Tile Tile { get { return MapManager.GetTileFromPosition(transform.position); } }
+    public Tile Tile { get { return Tile.GetTile(transform.position); } }
 
     public bool IsReady { get => (CanMoveNow && GetMoveTiles().Count > 0) || (CanAttackNow && GetAttackTiles().Count > 0); }
 
@@ -103,10 +103,8 @@ public class Unit : MonoBehaviour
         List<Tile> moveTiles = new();
         if (CanMoveNow)
         {
-            Tile[] adjacent = (Tile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-            foreach (Tile delta in adjacent)
+            foreach (Tile moveTile in Tile.GetAdjacentTiles())
             {
-                Tile moveTile = Tile + delta;
                 if (MapManager.IsMoveAllowed(moveTile))
                 {
                     moveTiles.Add(moveTile);
@@ -130,10 +128,8 @@ public class Unit : MonoBehaviour
     public List<Tile> GetOpponentTiles(Tile tile)
     {
         List<Tile> opponentsTiles = new();
-        Tile[] adjacent = (tile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-        foreach (Tile delta in adjacent)
+        foreach (Tile attackTile in tile.GetAdjacentTiles())
         {
-            Tile attackTile = tile + delta;
             if (MapManager.IsAttackAllowed(attackTile, IsEnemy))
             {
                 opponentsTiles.Add(attackTile);
@@ -145,7 +141,7 @@ public class Unit : MonoBehaviour
     public void MoveTo(Tile tile)
     {
         Vector3 previousPosition = transform.position;
-        transform.position = MapManager.GetPositionFromTile(tile);                              // Move to tile
+        transform.position = tile.GetPosition();                              // Move to tile
         Pivot.transform.rotation = Quaternion.LookRotation(transform.position - previousPosition);    // Turn to the move direction
         _timeNextMove = MapManager.GameTime + MapManager.TurnDuration;                                     // Time for next move
         //Debug.Log(name + " move to: " + tile + "\r\n");
