@@ -40,7 +40,7 @@ public class EnemyAI : MonoBehaviour
         }
         if (_unit.CanAttackNow)
         {
-            List<Vector3Int> tiles = _unit.GetAttackTiles();
+            List<Tile> tiles = _unit.GetAttackTiles();
             if (tiles.Count > 0)
             {
                 _unit.AttackTo(ChooseFrontTile(transform.position, _unit.Pivot.forward, tiles));        // Attack target in front or choose the one with less rotation
@@ -48,7 +48,7 @@ public class EnemyAI : MonoBehaviour
         }
         if (_unit.CanMoveNow)
         {
-            List<Vector3Int> tiles = _unit.GetOpponentTiles(_unit.Tile);
+            List<Tile> tiles = _unit.GetOpponentTiles(_unit.Tile);
             if (tiles.Count > 0)
             {
                 // Opponent in range, stay here and wait for attack
@@ -58,8 +58,8 @@ public class EnemyAI : MonoBehaviour
                 tiles = _unit.GetMoveTiles();
                 if (tiles.Count > 0)
                 {
-                    List<Vector3Int> nearOpponentTiles = new();
-                    foreach(Vector3Int nearTile in tiles)
+                    List<Tile> nearOpponentTiles = new();
+                    foreach(Tile nearTile in tiles)
                     {
                         if (_unit.GetOpponentTiles(nearTile).Count > 0)     // Search a movable tile that has an opponent in range
                         {
@@ -82,18 +82,18 @@ public class EnemyAI : MonoBehaviour
     /// <summary>
     /// Choose front tile or tile with the less rotation.
     /// </summary>
-    private Vector3Int ChooseFrontTile(Vector3 origin, Vector3 direction, List<Vector3Int> tiles)
+    private Tile ChooseFrontTile(Vector3 origin, Vector3 direction, List<Tile> tiles)
     {
         //Debug.Log("ChooseFrontTile() direction = " + direction + "\r\n");
-        List<Tuple<float, Vector3Int>> tuples = new();
-        foreach (Vector3Int tile in tiles)
+        List<Tuple<float, Tile>> tuples = new();
+        foreach (Tile tile in tiles)
         {
             float angle = Vector3.Angle(MapManager.GetPositionFromTile(tile) - origin, direction);
             tuples.Add(new(angle, tile));
             //Debug.Log("Add(" + tuples.Last().Item1 + ", " + tuples.Last().Item2 + ")\r\n");
         }
         tuples.Sort((t1, t2) => t1.Item1.CompareTo(t2.Item1));
-        Vector3Int v = tuples.First().Item2;
+        Tile v = tuples.First().Item2;
         return v;
     }
 }

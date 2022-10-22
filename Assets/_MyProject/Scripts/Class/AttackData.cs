@@ -39,8 +39,8 @@ public class AttackData
 
         // Calculate flanking bonus
         FlankingDefenseBonus = 0;
-        List<Vector3Int> flankTiles = GetFlankTiles(defender.Tile, attacker.Tile);
-        foreach (Vector3Int flankTile in flankTiles)
+        List<Tile> flankTiles = GetFlankTiles(defender.Tile, attacker.Tile);
+        foreach (Tile flankTile in flankTiles)
         {
             Unit flankUnit = Unit.GetUnit(flankTile);
             if (flankUnit != null && flankUnit.IsEnemy == defender.IsEnemy)
@@ -59,16 +59,16 @@ public class AttackData
         Damage = Mathf.Max(0, Mathf.RoundToInt(Attack - Defense));
     }
 
-    public List<Vector3Int> GetFlankTiles(Vector3Int defenderTile, Vector3Int attackerTile)
+    public List<Tile> GetFlankTiles(Tile defenderTile, Tile attackerTile)
     {
-        List<Vector3Int> flankTiles = new();
+        List<Tile> flankTiles = new();
 
-        Vector3Int[] adjacent = (attackerTile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-        List<Vector3Int> tiles = new();
+        Tile[] adjacent = (attackerTile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
+        List<Tile> tiles = new();
         int index = -1;
-        foreach (Vector3Int delta in adjacent)
+        foreach (Tile delta in adjacent)
         {
-            Vector3Int tile = attackerTile + delta;
+            Tile tile = attackerTile + delta;
             tiles.Add(tile);
             if (tile == defenderTile)
             {
@@ -78,7 +78,7 @@ public class AttackData
 
         // Flank left
         int indexFlankedTile = (index + 5) % 6;
-        Vector3Int flankedTile = tiles[indexFlankedTile];
+        Tile flankedTile = tiles[indexFlankedTile];
         if (MapManager.IsAllowed(flankedTile))
         {
             flankTiles.Add(flankedTile);

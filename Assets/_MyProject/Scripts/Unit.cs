@@ -34,14 +34,14 @@ public class Unit : MonoBehaviour
     private readonly List<float> _lastHits = new();
     public int LastHitsCount => _lastHits.Count;
 
-    public Vector3Int Tile { get { return MapManager.GetTileFromPosition(transform.position); } }
+    public Tile Tile { get { return MapManager.GetTileFromPosition(transform.position); } }
 
     public bool IsReady { get => (CanMoveNow && GetMoveTiles().Count > 0) || (CanAttackNow && GetAttackTiles().Count > 0); }
 
     // -------------------------------------------------------------[ BEGIN of static code ]-------
     private static readonly List<Unit> _globalList = new();
 
-    public static Unit GetUnit(Vector3Int tile)
+    public static Unit GetUnit(Tile tile)
     {
         foreach (Unit unit in _globalList)
         {
@@ -98,15 +98,15 @@ public class Unit : MonoBehaviour
         SetAnimationBool("Ready", IsReady);
     }
 
-    public List<Vector3Int> GetMoveTiles()
+    public List<Tile> GetMoveTiles()
     {
-        List<Vector3Int> moveTiles = new();
+        List<Tile> moveTiles = new();
         if (CanMoveNow)
         {
-            Vector3Int[] adjacent = (Tile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-            foreach (Vector3Int delta in adjacent)
+            Tile[] adjacent = (Tile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
+            foreach (Tile delta in adjacent)
             {
-                Vector3Int moveTile = Tile + delta;
+                Tile moveTile = Tile + delta;
                 if (MapManager.IsMoveAllowed(moveTile))
                 {
                     moveTiles.Add(moveTile);
@@ -117,9 +117,9 @@ public class Unit : MonoBehaviour
     }
 
 
-    public List<Vector3Int> GetAttackTiles()
+    public List<Tile> GetAttackTiles()
     {
-        List<Vector3Int> attackTiles = new();
+        List<Tile> attackTiles = new();
         if (CanAttackNow)
         {
             attackTiles.AddRange(GetOpponentTiles(Tile));
@@ -127,13 +127,13 @@ public class Unit : MonoBehaviour
         return attackTiles;
     }
 
-    public List<Vector3Int> GetOpponentTiles(Vector3Int tile)
+    public List<Tile> GetOpponentTiles(Tile tile)
     {
-        List<Vector3Int> opponentsTiles = new();
-        Vector3Int[] adjacent = (tile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-        foreach (Vector3Int delta in adjacent)
+        List<Tile> opponentsTiles = new();
+        Tile[] adjacent = (tile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
+        foreach (Tile delta in adjacent)
         {
-            Vector3Int attackTile = tile + delta;
+            Tile attackTile = tile + delta;
             if (MapManager.IsAttackAllowed(attackTile, IsEnemy))
             {
                 opponentsTiles.Add(attackTile);
@@ -142,7 +142,7 @@ public class Unit : MonoBehaviour
         return opponentsTiles;
     }
 
-    public void MoveTo(Vector3Int tile)
+    public void MoveTo(Tile tile)
     {
         Vector3 previousPosition = transform.position;
         transform.position = MapManager.GetPositionFromTile(tile);                              // Move to tile
@@ -154,7 +154,7 @@ public class Unit : MonoBehaviour
         GetComponent<AudioSource>().PlayOneShot(SoundMove);
     }
 
-    public void AttackTo(Vector3Int tile)
+    public void AttackTo(Tile tile)
     {
         AttackData attackData = new();
         Unit defender = Unit.GetUnit(tile);

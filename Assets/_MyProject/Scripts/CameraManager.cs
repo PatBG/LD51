@@ -47,7 +47,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public static void SetTileTarget(Vector3Int tile)
+    public static void SetTileTarget(Tile tile)
     {
         _target = MapManager.GetPositionFromTile(tile);
         _hasTarget = true;

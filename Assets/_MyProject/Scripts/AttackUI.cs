@@ -16,8 +16,8 @@ public class AttackUI : MonoBehaviour
     public GameObject IconHit;
 
     public bool IsRefreshed;
-    public Vector3Int AttackerTile;
-    public Vector3Int DefenderTile;
+    public Tile AttackerTile;
+    public Tile DefenderTile;
 
     private GameObject _attackerHUD;
     private GameObject _defenderHUD;

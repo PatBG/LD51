@@ -27,7 +27,7 @@ public class MapManager : MonoBehaviour
             for (int z = 0; z < SizeZ; z++)
             {
                 int i = (x % 2) == 0 ? (z % 3) : ((z + 2) % 3);
-                GameObject go = Instantiate(TileGrass[i], GetPositionFromTile(new Vector3Int(x, 0, z)), Quaternion.identity, transform);
+                GameObject go = Instantiate(TileGrass[i], GetPositionFromTile(new Tile(x, z)), Quaternion.identity, transform);
                 go.name = "Tile_" + x + "_" + z;
                 go.layer = layermask;
             }
@@ -40,15 +40,14 @@ public class MapManager : MonoBehaviour
         GameTime += Time.deltaTime * GameTimeScale;
     }
 
-    public static Vector3Int GetTileFromPosition(Vector3 position)
+    public static Tile GetTileFromPosition(Vector3 position)
     {
-        return new Vector3Int(
-            Mathf.RoundToInt(position.x), 
-            0, 
+        return new Tile(
+            Mathf.RoundToInt(position.x),
             (Mathf.RoundToInt(position.x) % 2) == 0 ? Mathf.RoundToInt(position.z) : Mathf.RoundToInt(position.z - 0.5f));
     }
 
-    public static Vector3 GetPositionFromTile(Vector3Int tile)
+    public static Vector3 GetPositionFromTile(Tile tile)
     {
         return new Vector3(
             tile.x, 
@@ -56,33 +55,33 @@ public class MapManager : MonoBehaviour
             (tile.x % 2) == 0 ? tile.z : tile.z + 0.5f);
     }
 
-    public static readonly Vector3Int[] Adjacent0 = new Vector3Int[6]
+    public static readonly Tile[] Adjacent0 = new Tile[6]
     {
-        new Vector3Int(0, 0, 1),
-        new Vector3Int(1, 0, 0),
-        new Vector3Int(1, 0, -1),
-        new Vector3Int(0, 0, -1),
-        new Vector3Int(-1, 0, -1),
-        new Vector3Int(-1, 0, 0),
+        new Tile(0, 1),
+        new Tile(1, 0),
+        new Tile(1, -1),
+        new Tile(0, -1),
+        new Tile(-1, -1),
+        new Tile(-1, 0),
     };
 
-    public static readonly Vector3Int[] Adjacent1 = new Vector3Int[6]
+    public static readonly Tile[] Adjacent1 = new Tile[6]
     {
-        new Vector3Int(0, 0, 1),
-        new Vector3Int(1, 0, 1),
-        new Vector3Int(1, 0, 0),
-        new Vector3Int(0, 0, -1),
-        new Vector3Int(-1, 0, 0),
-        new Vector3Int(-1, 0, 1),
+        new Tile(0, 1),
+        new Tile(1, 1),
+        new Tile(1, 0),
+        new Tile(0, -1),
+        new Tile(-1, 0),
+        new Tile(-1, 1),
     };
 
-    public static bool IsAllowed(Vector3Int tile)
+    public static bool IsAllowed(Tile tile)
     {
         bool isAllowed = (tile.x >= 0 && tile.x < SizeX && tile.z >= 0 && tile.z < SizeZ);
         return isAllowed;
     }
 
-    public static bool IsMoveAllowed(Vector3Int tile)
+    public static bool IsMoveAllowed(Tile tile)
     {
         bool isAllowed = IsAllowed(tile);
         if (isAllowed)
@@ -93,7 +92,7 @@ public class MapManager : MonoBehaviour
         return isAllowed;
     }
 
-    public static bool IsAttackAllowed(Vector3Int tile, bool isEnemy)
+    public static bool IsAttackAllowed(Tile tile, bool isEnemy)
     {
         bool isAllowed = IsAllowed(tile);
         if (isAllowed)

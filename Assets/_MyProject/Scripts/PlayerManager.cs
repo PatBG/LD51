@@ -40,7 +40,7 @@ public class PlayerManager : MonoBehaviour
         EnterPanelHelp();
     }
 
-    private bool TileFromMousePosition(out Vector3Int tile)
+    private bool TileFromMousePosition(out Tile tile)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         int layermask = 1 << LayerMask.NameToLayer("Tiles");
@@ -51,7 +51,7 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            tile = new Vector3Int(-1, -1, -1);
+            tile = new Tile(-1, -1);
             return false;
         }
     }
@@ -69,7 +69,7 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
-        bool isHoveredTile = TileFromMousePosition(out Vector3Int hoveredTile);
+        bool isHoveredTile = TileFromMousePosition(out Tile hoveredTile);
         if (Input.GetButtonDown("Fire1"))
         {
             if (isHoveredTile)
@@ -84,7 +84,7 @@ public class PlayerManager : MonoBehaviour
         else if (_selection == SelectionType.Ally)
         {
             // Refresh Selected unit (reselect it)
-            Vector3Int tile = _selectionUnit.Tile;
+            Tile tile = _selectionUnit.Tile;
             ClearSelection();
             SelectTile(tile, false);
             if (_selection == SelectionType.Ally)
@@ -107,7 +107,7 @@ public class PlayerManager : MonoBehaviour
                             }
                         }
                         // An attackable enemy is hovered, update the attack HUD
-                        _attackUI.DefenderTile = isEnemy ? hoveredTile : new Vector3Int(-1, -1, -1);
+                        _attackUI.DefenderTile = isEnemy ? hoveredTile : new Tile(-1, -1);
                     }
                 }
             }
@@ -122,7 +122,7 @@ public class PlayerManager : MonoBehaviour
                 {
                     // Display the HUD for the hovered unit
                     _attackUI.AttackerTile = hoveredTile;
-                    _attackUI.DefenderTile = new Vector3Int(-1, -1, -1);
+                    _attackUI.DefenderTile = new Tile(-1, -1);
                 }
             }
             _attackUI.IsRefreshed = (unit != null);
@@ -168,7 +168,7 @@ public class PlayerManager : MonoBehaviour
         _attackUI.IsRefreshed = false;
     }
 
-    private void SelectTile(Vector3Int tile, bool isCameraFollow = true)
+    private void SelectTile(Tile tile, bool isCameraFollow = true)
     {
         //Debug.Log("Select tile: " + tile + "\r\n");
         if (isCameraFollow)
@@ -195,18 +195,18 @@ public class PlayerManager : MonoBehaviour
 
                 // Activate the attackHUD
                 _attackUI.AttackerTile = tile;
-                _attackUI.DefenderTile = new Vector3Int(-1, -1, -1);
+                _attackUI.DefenderTile = new Tile(-1, -1);
                 _attackUI.IsRefreshed = true;
 
                 // Highlight the unit
                 _highlights.Add(Instantiate(HighlightAlly, MapManager.GetPositionFromTile(tile), Quaternion.identity, unit.transform));
                 // Highlight the movements
-                foreach (Vector3Int moveTile in unit.GetMoveTiles())
+                foreach (Tile moveTile in unit.GetMoveTiles())
                 {
                     _highlights.Add(Instantiate(HighlightMove, MapManager.GetPositionFromTile(moveTile), Quaternion.identity, unit.transform));
                 }
                 // Highlight the attacks
-                foreach (Vector3Int attackTile in unit.GetAttackTiles())
+                foreach (Tile attackTile in unit.GetAttackTiles())
                 {
                     _highlights.Add(Instantiate(HighlightAttack, MapManager.GetPositionFromTile(attackTile), Quaternion.identity, unit.transform));
                 }
