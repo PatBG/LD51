@@ -51,7 +51,7 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            tile = new Tile(-1, -1);
+            tile = Tile.Invalid;
             return false;
         }
     }
@@ -107,7 +107,7 @@ public class PlayerManager : MonoBehaviour
                             }
                         }
                         // An attackable enemy is hovered, update the attack HUD
-                        _attackUI.DefenderTile = isEnemy ? hoveredTile : new Tile(-1, -1);
+                        _attackUI.DefenderTile = isEnemy ? hoveredTile : Tile.Invalid;
                     }
                 }
             }
@@ -122,7 +122,7 @@ public class PlayerManager : MonoBehaviour
                 {
                     // Display the HUD for the hovered unit
                     _attackUI.AttackerTile = hoveredTile;
-                    _attackUI.DefenderTile = new Tile(-1, -1);
+                    _attackUI.DefenderTile = Tile.Invalid;
                 }
             }
             _attackUI.IsRefreshed = (unit != null);
@@ -194,7 +194,7 @@ public class PlayerManager : MonoBehaviour
 
                 // Activate the attackHUD
                 _attackUI.AttackerTile = tile;
-                _attackUI.DefenderTile = new Tile(-1, -1);
+                _attackUI.DefenderTile = Tile.Invalid;
                 _attackUI.IsRefreshed = true;
 
                 // Highlight the unit

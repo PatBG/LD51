@@ -7,6 +7,8 @@ public class Tile
     public int x;
     public int z;
 
+    public static readonly Tile Invalid = new(int.MinValue, int.MinValue);
+
     public Tile(int _x, int _z)
     {
         x = _x;
