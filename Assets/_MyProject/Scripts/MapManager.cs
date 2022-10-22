@@ -40,6 +40,13 @@ public class MapManager : MonoBehaviour
         GameTime += Time.deltaTime * GameTimeScale;
     }
 
+    public void SetGameSpeed(float speed)
+    {
+        GameTimeScale = speed;
+    }
+
+    // ------------------------------------------------------------------------
+    #region Static functions
     public static bool IsAllowed(Tile tile)
     {
         bool isAllowed = (tile.x >= 0 && tile.x < SizeX && tile.z >= 0 && tile.z < SizeZ);
@@ -67,9 +74,6 @@ public class MapManager : MonoBehaviour
         }
         return isAllowed;
     }
-
-    public void SetGameSpeed(float speed)
-    {
-        GameTimeScale = speed;
-    }
+    #endregion
+    // ------------------------------------------------------------------------
 }
