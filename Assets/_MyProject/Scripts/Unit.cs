@@ -26,8 +26,8 @@ public class Unit : MonoBehaviour
     public bool CanMove;
     public bool CanAttack;
 
-    public bool CanMoveNow { get { return CanMove && _timeNextMove <= Time.time; } }
-    public bool CanAttackNow { get { return CanAttack && _timeNextAttack <= Time.time; } }
+    public bool CanMoveNow { get { return CanMove && _timeNextMove <= MapManager.GameTime; } }
+    public bool CanAttackNow { get { return CanAttack && _timeNextAttack <= MapManager.GameTime; } }
 
     private float _timeNextMove;
     private float _timeNextAttack;
@@ -89,7 +89,7 @@ public class Unit : MonoBehaviour
         // Purge last hits list (number of hits received this turn)
         for (int i = _lastHits.Count - 1; i >= 0; i--)
         {
-            if ((_lastHits[i] + MapManager.TurnDuration) <= Time.time)
+            if ((_lastHits[i] + MapManager.TurnDuration) <= MapManager.GameTime)
             {
                 _lastHits.RemoveAt(i);
             }
@@ -114,42 +114,6 @@ public class Unit : MonoBehaviour
             }
         }
         return moveTiles;
-    }
-
-    public List<Vector3Int> GetFlankTiles(Vector3Int attackTile)
-    {
-        List<Vector3Int> flankTiles = new();
-
-        Vector3Int[] adjacent = (attackTile.x % 2) == 0 ? MapManager.Adjacent0 : MapManager.Adjacent1;
-        List<Vector3Int> tiles = new();
-        int index = -1;
-        foreach (Vector3Int delta in adjacent)
-        {
-            Vector3Int tile = attackTile + delta;
-            tiles.Add(tile);
-            if (tile == Tile)
-            {
-                index = tiles.Count - 1;            // Index if the current unit
-            }
-        }
-
-        // Flank left
-        int indexFlankedTile = (index + 5) % 6;
-        Vector3Int flankedTile = tiles[indexFlankedTile];
-        if (MapManager.IsAllowed(flankedTile))
-        {
-            flankTiles.Add(flankedTile);
-        }
-
-        // Flank right
-        indexFlankedTile = (index + 1) % 6;
-        flankedTile = tiles[indexFlankedTile];
-        if (MapManager.IsAllowed(flankedTile))
-        {
-            flankTiles.Add(flankedTile);
-        }
-
-        return flankTiles;
     }
 
 
@@ -183,7 +147,7 @@ public class Unit : MonoBehaviour
         Vector3 previousPosition = transform.position;
         transform.position = MapManager.GetPositionFromTile(tile);                              // Move to tile
         Pivot.transform.rotation = Quaternion.LookRotation(transform.position - previousPosition);    // Turn to the move direction
-        _timeNextMove = Time.time + MapManager.TurnDuration;                                     // Time for next move
+        _timeNextMove = MapManager.GameTime + MapManager.TurnDuration;                                     // Time for next move
         //Debug.Log(name + " move to: " + tile + "\r\n");
 
         SetAnimationTrigger("Move");
@@ -208,7 +172,7 @@ public class Unit : MonoBehaviour
             " defense=" + attackData.Defender.Defense + "+" + attackData.FlankingDefenseBonus + "-" + attackData.RecentHitsDefenseMalus + " -> damage=" + attackData.Damage + "\r\n");
         attackData.Defender.Damage(attackData);
 
-        _timeNextAttack = Time.time + MapManager.TurnDuration;              // Time for next attack
+        _timeNextAttack = MapManager.GameTime + MapManager.TurnDuration;              // Time for next attack
         _timeNextMove = _timeNextAttack;                                    // Time for next move is also affected because attack ends the turn
 
         SetAnimationTrigger("Attack");
@@ -230,7 +194,7 @@ public class Unit : MonoBehaviour
 
     private void Damage(AttackData attackData)
     {
-        _lastHits.Add(Time.time);
+        _lastHits.Add(MapManager.GameTime);
         StartDamagePopup(attackData);
         HP = Mathf.Max(0, HP - attackData.Damage);
         if (HP > 0)

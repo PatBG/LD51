@@ -11,12 +11,17 @@ public class MapManager : MonoBehaviour
 
     public static float TurnDuration = 10;      // Every 10 seconds
 
+    public static float GameTime;
+    public static float GameTimeScale;
+
     // Start is called before the first frame update
     void Start()
     {
-        int layermask = LayerMask.NameToLayer("Tiles");
+        GameTime = Time.time;
+        GameTimeScale = 1;
 
         // Generate map
+        int layermask = LayerMask.NameToLayer("Tiles");
         for (int x = 0; x < SizeX; x++)
         {
             for (int z = 0; z < SizeZ; z++)
@@ -32,7 +37,7 @@ public class MapManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        GameTime += Time.deltaTime * GameTimeScale;
     }
 
     public static Vector3Int GetTileFromPosition(Vector3 position)
@@ -97,5 +102,10 @@ public class MapManager : MonoBehaviour
             isAllowed = (unit != null) && (unit.IsEnemy != isEnemy);
         }
         return isAllowed;
+    }
+
+    public void SetGameSpeed(float speed)
+    {
+        GameTimeScale = speed;
     }
 }

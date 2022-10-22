@@ -31,10 +31,10 @@ public class EnemyAI : MonoBehaviour
             if (_previousIsReady)
             {
                 // Simulate a random pause between each turn
-                _timePseudoPause = Time.time + Random.Range(Mathf.Min(1, MapManager.TurnDuration / 2), MapManager.TurnDuration / 2);
+                _timePseudoPause = MapManager.GameTime + Random.Range(Mathf.Min(1, MapManager.TurnDuration / 2), MapManager.TurnDuration / 2);
             }
         }
-        if (_previousIsReady && _timePseudoPause > Time.time)
+        if (_previousIsReady && _timePseudoPause > MapManager.GameTime)
         {
             return;
         }
