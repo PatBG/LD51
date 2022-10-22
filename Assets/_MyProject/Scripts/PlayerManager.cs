@@ -87,26 +87,28 @@ public class PlayerManager : MonoBehaviour
             Vector3Int tile = _selectionUnit.Tile;
             ClearSelection();
             SelectTile(tile, false);
-
-            // If he can attack now, check if we hover an enemy
-            if (_selectionUnit.CanAttackNow)
+            if (_selection == SelectionType.Ally)
             {
-                if (isHoveredTile)
+                // If he can attack now, check if we hover an enemy
+                if (_selectionUnit.CanAttackNow)
                 {
-                    bool isEnemy = false;
-                    foreach (GameObject go in _highlights)
+                    if (isHoveredTile)
                     {
-                        if (MapManager.GetTileFromPosition(go.transform.position) == hoveredTile)
+                        bool isEnemy = false;
+                        foreach (GameObject go in _highlights)
                         {
-                            if (go.name.StartsWith(HighlightAttack.name))
+                            if (MapManager.GetTileFromPosition(go.transform.position) == hoveredTile)
                             {
-                                isEnemy = true;
-                                break;
+                                if (go.name.StartsWith(HighlightAttack.name))
+                                {
+                                    isEnemy = true;
+                                    break;
+                                }
                             }
                         }
+                        // An attackable enemy is hovered, update the attack HUD
+                        _attackUI.DefenderTile = isEnemy ? hoveredTile : new Vector3Int(-1, -1, -1);
                     }
-                    // An attackable enemy is hovered, update the attack HUD
-                    _attackUI.DefenderTile = isEnemy ? hoveredTile : new Vector3Int(-1, -1, -1);
                 }
             }
         }
