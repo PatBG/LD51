@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -15,12 +16,13 @@ public class AttackUI : MonoBehaviour
     public GameObject IconBackstab;
     public GameObject IconHit;
 
-    public bool IsRefreshed;
-    public Tile AttackerTile;
-    public Tile DefenderTile;
 
-    private GameObject _attackerHUD;
-    private GameObject _defenderHUD;
+    public bool IsRefreshed;
+    public Tile SelectedTile;
+    public Tile HoveredTile;
+
+    private GameObject _selectedHUD;
+    private GameObject _hoveredHUD;
 
     public const float CoefIconPosition = 1;
     public static readonly Vector3 ScaleFactor = Vector3.one * 0.1f;
@@ -37,52 +39,74 @@ public class AttackUI : MonoBehaviour
 
     public void ClearAll()
     {
-        if (_attackerHUD != null)
+        if (_selectedHUD != null)
         {
-            Destroy(_attackerHUD);
-            _attackerHUD = null;
+            Destroy(_selectedHUD);
+            _selectedHUD = null;
         }
-        if (_defenderHUD != null)
+        if (_hoveredHUD != null)
         {
-            Destroy(_defenderHUD);
-            _defenderHUD = null;
+            Destroy(_hoveredHUD);
+            _hoveredHUD = null;
         }
     }
 
     private void InitHUD()
     {
-        Unit attacker = Unit.GetUnit(AttackerTile);
-        Unit defender = Unit.GetUnit(DefenderTile);
-        if (attacker != null)
+        Unit selectedUnit = Unit.GetUnit(SelectedTile);
+        Unit hoveredUnit = Unit.GetUnit(HoveredTile);
+
+        if (selectedUnit != null)
         {
-            _attackerHUD = new GameObject("AttackerHUD");
-            _attackerHUD.transform.parent = attacker.transform;
-            if (defender == null)
+            _selectedHUD = new GameObject("AttackerHUD");
+            _selectedHUD.transform.parent = selectedUnit.transform;
+        }
+        if (hoveredUnit != null)
+        {
+            _hoveredHUD = new GameObject("DefenderHUD");
+            _hoveredHUD.transform.parent = hoveredUnit.transform;
+        }
+
+        if (selectedUnit != null && hoveredUnit != null && selectedUnit.GetAttackTiles().Contains(hoveredUnit.Tile))
+        {
+            AttackData attackData = new();
+            attackData.CalculateAttack(selectedUnit, hoveredUnit);
+            InitAttacker(attackData, _selectedHUD.transform);
+            InitDefender(attackData, _hoveredHUD.transform);
+        }
+        else
+        {
+            if (selectedUnit != null)
             {
                 AttackData attackData = new()
                 {
-                    Attacker = attacker,
+                    Attacker = selectedUnit,
                     BackstabAttackBonus = 0
                 };
-                InitAttacker(attackData, _attackerHUD.transform);
+                InitAttacker(attackData, _selectedHUD.transform);
             }
-            else
+            if (hoveredUnit != null)
             {
-                _defenderHUD = new GameObject("DefenderHUD");
-                _defenderHUD.transform.parent = defender.transform;
-
-                AttackData attackData = new();
-                attackData.CalculateAttack(attacker, defender);
-                InitAttacker(attackData, _attackerHUD.transform);
-                InitDefender(attackData, _defenderHUD.transform);
-
-                _defenderHUD.transform.localPosition = Vector3.up;
-                _defenderHUD.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
-                _defenderHUD.transform.localScale = ScaleFactor;
+                AttackData attackData = new()
+                {
+                    Attacker = hoveredUnit,
+                    BackstabAttackBonus = 0
+                };
+                InitAttacker(attackData, _hoveredHUD.transform);
             }
-            _attackerHUD.transform.localPosition = Vector3.up;
-            _attackerHUD.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
-            _attackerHUD.transform.localScale = ScaleFactor;
+        }
+
+        if (selectedUnit != null)
+        {
+            _selectedHUD.transform.localPosition = Vector3.up;
+            _selectedHUD.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
+            _selectedHUD.transform.localScale = ScaleFactor;
+        }
+        if (hoveredUnit != null)
+        {
+            _hoveredHUD.transform.localPosition = Vector3.up;
+            _hoveredHUD.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
+            _hoveredHUD.transform.localScale = ScaleFactor;
         }
     }
 

@@ -7,8 +7,6 @@ public class Tile
     public int x;
     public int z;
 
-    public static readonly Tile Invalid = new(int.MinValue, int.MinValue);
-
     public Tile(int _x, int _z)
     {
         x = _x;
@@ -17,11 +15,11 @@ public class Tile
 
     public override bool Equals(object obj) => obj is Tile other && Equals(other);
 
-    public bool Equals(Tile p) => x == p.x && z == p.z;
+    public bool Equals(Tile p) => p != null && x == p.x && z == p.z;
 
     public override int GetHashCode() => (x, z).GetHashCode();
 
-    public static bool operator ==(Tile lhs, Tile rhs) => lhs.Equals(rhs);
+    public static bool operator ==(Tile lhs, Tile rhs) => (lhs is null) ? (rhs is null) : lhs.Equals(rhs);
 
     public static bool operator !=(Tile lhs, Tile rhs) => !(lhs == rhs);
 
@@ -80,6 +78,13 @@ public class Tile
         new Tile(-1, 0),
         new Tile(-1, 1),
     };
+
+    public static int GetDistance(Tile tile1, Tile tile2)
+    {
+        int distance = 0;
+        Debug.LogError("TO BE IMPLEMENTED\r\n");
+        return distance;
+    }
     #endregion
     // ------------------------------------------------------------------------
 }

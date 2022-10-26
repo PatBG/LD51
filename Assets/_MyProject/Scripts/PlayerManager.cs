@@ -19,7 +19,7 @@ public class PlayerManager : MonoBehaviour
 
     private readonly List<GameObject> _highlights = new();
 
-    public enum SelectionType { None, Ally }
+    public enum SelectionType { None, Ally, Enemy }
 
     private SelectionType _selection;
     private Unit _selectionUnit;
@@ -51,7 +51,7 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            tile = Tile.Invalid;
+            tile = null;
             return false;
         }
     }
@@ -80,53 +80,20 @@ public class PlayerManager : MonoBehaviour
             {
                 ClearSelection();
             }
-        }
-        else if (_selection == SelectionType.Ally)
-        {
-            // Refresh Selected unit (reselect it)
-            Tile tile = _selectionUnit.Tile;
-            ClearSelection();
-            SelectTile(tile, false);
-            if (_selection == SelectionType.Ally)
-            {
-                // If he can attack now, check if we hover an enemy
-                if (_selectionUnit.CanAttackNow)
-                {
-                    if (isHoveredTile)
-                    {
-                        bool isEnemy = false;
-                        foreach (GameObject go in _highlights)
-                        {
-                            if (Tile.GetTile(go.transform.position) == hoveredTile)
-                            {
-                                if (go.name.StartsWith(HighlightAttack.name))
-                                {
-                                    isEnemy = true;
-                                    break;
-                                }
-                            }
-                        }
-                        // An attackable enemy is hovered, update the attack HUD
-                        _attackUI.DefenderTile = isEnemy ? hoveredTile : Tile.Invalid;
-                    }
-                }
-            }
+            _attackUI.HoveredTile = null;
         }
         else
         {
-            Unit unit = null;
-            if (isHoveredTile)
+            if (_selection != SelectionType.None)
             {
-                unit = Unit.GetUnit(hoveredTile);
-                if (unit != null)
-                {
-                    // Display the HUD for the hovered unit
-                    _attackUI.AttackerTile = hoveredTile;
-                    _attackUI.DefenderTile = Tile.Invalid;
-                }
+                // Refresh Selected unit (reselect it)
+                Tile tile = _selectionUnit.Tile;
+                ClearSelection();
+                SelectTile(tile, false);
             }
-            _attackUI.IsRefreshed = (unit != null);
+            _attackUI.HoveredTile = hoveredTile;
         }
+        _attackUI.IsRefreshed = (_attackUI.SelectedTile != null || _attackUI.HoveredTile != null);
 
         CheckEndGame();
     }
@@ -184,35 +151,8 @@ public class PlayerManager : MonoBehaviour
                 CameraManager.SetTileTarget(tile);
             }
         }
-        if (_selection == SelectionType.None)
-        {
-            Unit unit = Unit.GetUnit(tile);
-            if (unit != null && unit.IsEnemy == false)
-            {
-                _selectionUnit = unit;
-                _selection = SelectionType.Ally;
 
-                // Activate the attackHUD
-                _attackUI.AttackerTile = tile;
-                _attackUI.DefenderTile = Tile.Invalid;
-                _attackUI.IsRefreshed = true;
-
-                // Highlight the unit
-                _highlights.Add(Instantiate(HighlightAlly, tile.GetPosition(), Quaternion.identity, unit.transform));
-                // Highlight the movements
-                foreach (Tile moveTile in unit.GetMoveTiles())
-                {
-                    _highlights.Add(Instantiate(HighlightMove, moveTile.GetPosition(), Quaternion.identity, unit.transform));
-                }
-                // Highlight the attacks
-                foreach (Tile attackTile in unit.GetAttackTiles())
-                {
-                    _highlights.Add(Instantiate(HighlightAttack, attackTile.GetPosition(), Quaternion.identity, unit.transform));
-                }
-                return;
-            }
-        }
-        else if (_selection == SelectionType.Ally)
+        if (_selection == SelectionType.Ally)
         {
             foreach (GameObject go in _highlights)
             {
@@ -221,6 +161,9 @@ public class PlayerManager : MonoBehaviour
                     if (go.name.StartsWith(HighlightMove.name))
                     {
                         _selectionUnit.MoveTo(tile);
+                        ClearSelection();
+                        SelectTile(tile);           // After a move, the destination is selected
+                        return;
                     }
                     else if (go.name.StartsWith(HighlightAttack.name))
                     {
@@ -234,11 +177,39 @@ public class PlayerManager : MonoBehaviour
                     }
                 }
             }
-            ClearSelection();
-            SelectTile(tile);                // Clear the previous selection and select the new tile
-            return;
         }
-        ClearSelection();
+        
+        Unit unit = Unit.GetUnit(tile);
+        if (unit != null)
+        {
+            _selectionUnit = unit;
+            _selection = unit.IsEnemy ? SelectionType.Enemy : SelectionType.Ally;
+
+            // Activate the attackHUD
+            _attackUI.SelectedTile = tile;
+            _attackUI.IsRefreshed = true;
+
+            // Highlight the unit
+            _highlights.Add(Instantiate(unit.IsEnemy ? HighlightEnemy : HighlightAlly, tile.GetPosition(), Quaternion.identity, unit.transform));
+
+            if (!unit.IsEnemy)
+            {
+                // Highlight the movements
+                foreach (Tile moveTile in unit.GetMoveTiles())
+                {
+                    _highlights.Add(Instantiate(HighlightMove, moveTile.GetPosition(), Quaternion.identity, unit.transform));
+                }
+                // Highlight the attacks
+                foreach (Tile attackTile in unit.GetAttackTiles())
+                {
+                    _highlights.Add(Instantiate(HighlightAttack, attackTile.GetPosition(), Quaternion.identity, unit.transform));
+                }
+            }
+        }
+        else
+        {
+            ClearSelection();
+        }
     }
 
     public void RestartGame()
@@ -257,5 +228,10 @@ public class PlayerManager : MonoBehaviour
     {
         PanelHelp.SetActive(false);
         Time.timeScale = 1;
+    }
+
+    public void ToggleFullscreen()
+    {
+        Screen.fullScreen = !Screen.fullScreen;
     }
 }
