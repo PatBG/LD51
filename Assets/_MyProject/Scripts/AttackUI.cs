@@ -1,10 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static Unit;
+using static UnityEngine.UI.CanvasScaler;
 
 public class AttackUI : MonoBehaviour
 {
@@ -15,6 +18,8 @@ public class AttackUI : MonoBehaviour
     public GameObject IconSword;
     public GameObject IconBackstab;
     public GameObject IconHit;
+    public GameObject IconCanAttack;
+    public GameObject IconCanMove;
 
 
     public bool IsRefreshed;
@@ -112,6 +117,7 @@ public class AttackUI : MonoBehaviour
 
     private void InitAttacker(AttackData attackData, Transform hud)
     {
+        InitTimerIcons(attackData.Attacker, hud);
         int index = 0;
         // Attack data
         for (int i = 0; i < attackData.Attacker.Attack; i++)
@@ -146,6 +152,7 @@ public class AttackUI : MonoBehaviour
 
     private void InitDefender(AttackData attackData, Transform hud)
     {
+        InitTimerIcons(attackData.Defender, hud);
         int index = 0;
         for (int i = 0; i < attackData.FlankingDefenseBonus; i++)
         {
@@ -168,5 +175,19 @@ public class AttackUI : MonoBehaviour
         {
             Instantiate(IconHit, new Vector3(((float)index++) * CoefIconPosition, 0, -0.1f), Quaternion.identity, hud);
         }
+    }
+
+    private void InitTimerIcons(Unit unit, Transform hud)
+    {
+        InstantiateRadialFill(IconCanMove, new Vector3(0 * CoefIconPosition, 2 * CoefIconPosition, 0f), hud, unit.PercentNextMove);
+        InstantiateRadialFill(IconCanAttack, new Vector3(1 * CoefIconPosition, 2 * CoefIconPosition, 0f), hud, unit.PercentNextAttack);
+    }
+
+    private void InstantiateRadialFill(GameObject original, Vector3 position, Transform parent, float percent)
+    {
+        GameObject go = Instantiate(original, position, Quaternion.identity, parent);
+        Material mat = Instantiate(go.GetComponent<MeshRenderer>().sharedMaterial);
+        mat.SetFloat("_Arc2", 360 - 360 * percent);
+        go.GetComponent<MeshRenderer>().sharedMaterial = mat;
     }
 }

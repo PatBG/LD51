@@ -30,7 +30,11 @@ public class Unit : MonoBehaviour
     public bool CanAttackNow { get { return CanAttack && _timeNextAttack <= MapManager.GameTime; } }
 
     private float _timeNextMove;
+    public float PercentNextMove => CanMoveNow ? 1f : 1 - (_timeNextMove - MapManager.GameTime) / MapManager.TurnDuration;
+
     private float _timeNextAttack;
+    public float PercentNextAttack => CanAttackNow ? 1f : 1 - (_timeNextAttack - MapManager.GameTime) / MapManager.TurnDuration;
+
     private readonly List<float> _lastHits = new();
     public int LastHitsCount => _lastHits.Count;
 
